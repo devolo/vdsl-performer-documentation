@@ -4,18 +4,22 @@ This guideline defines the communication needs between xDSL Customer Premises Eq
   - [References](#references)
   - [Introduction](#introduction)
   - [Gateway discovery](#gateway-discovery)
-    - [SSDP Discovery](#ssdp-discovery)
+    - [SSDP discovery](#ssdp-discovery)
     - [UPnP description](#upnp-description)
     - [Data model discovery](#data-model-discovery)
-    - [Supported Parameters](#supported-parameters)
+    - [Supported parameters](#supported-parameters)
     - [Get Values](#get-values)
   - [Relevant TR-181 data model parameters](#relevant-tr-181-data-model-parameters)
 
 ## Abbreviations
 
+- **BBF** Broadband Forum
 - **CMS:2** ConfigurationManagement service defined by UPnP Forum in UPnP DM CMS:2
 - **CPE** Customer Premises Equipment
+- **DSL** Digital Subscriber Line
 - **DM** Device Management
+- **PLC** Powerline Communication
+- **SNR** Signal-to-noise ratio
 - **SOAP** Simple Object Access Protocol
 - **SSDP** Simple Service Discovery Protocol
 - **ST** Search Topic used in SSDP
@@ -30,9 +34,9 @@ This guideline defines the communication needs between xDSL Customer Premises Eq
 - [UPnP Device Architecture 2.0](https://openconnectivity.org/upnp-specs/UPnP-arch-DeviceArchitecture-v2.0-20200417.pdf)
 
 ## Introduction
-The Dynamic Interference Mitigation (DIM) aims to eliminate the impact of Powerline on the DSL connection while keeping the best PLC performance by adjusting dynamically the PLC transmission power according to disturbances of the DSL SNR. Therefore, it requires knowledge of the SNR of the DSL line. This is achieved by first detecting the connected gateway and then requesting the DSL SNR from the gateway.
+The VDSL performer algorithm aims to eliminate the impact of PLC on the DSL connection while keeping the best PLC performance by adjusting dynamically the PLC transmission power according to disturbances of the DSL SNR. Therefore, it requires knowledge of the DSL SNR. This is achieved by first detecting the connected gateway and then requesting the DSL SNR from this gateway.
 
-Since the device starts with a power mask which already decreases the power at certain frequencies depending on the DSL profile (e.g., 17a, 35b), it might happen that the DIM algorithm also increases power where it does not interfere while it may further decrease the power mask at frequencies where the DSL signal may still be disturbed.
+Since the device starts with a power mask which already decreases the power at certain frequencies depending on the DSL profile (e.g., 17a, 35b), it might happen that the VDSL performer algorithm also increases power where it does not interfere while it may further decrease the power mask at frequencies where the DSL signal may still be disturbed.
 
 To find a suitable gateway device, the mechanism defined in UPnP DM CMS Discovering of the Data Model. The messages exchanged are defined in UPnP Device Architecture 2.0.
 

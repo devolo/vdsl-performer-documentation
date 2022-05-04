@@ -1,6 +1,7 @@
 @startuml sequence
 skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
+skinparam shadowing false
 hide footbox
 
 skinparam sequence {

@@ -232,12 +232,12 @@ The last stage of the discovery process is used to check if the gateway has a va
 
 The PLC device will request the values using the following request.
 
-POST path control URL HTTP/1.1
-HOST: hostname:portNumber
-CONTENT-LENGTH: bytes in body
-CONTENT-TYPE: text/xml; charset="utf-8"
-USER-AGENT: OS/version UPnP/2.0 product/version
-SOAPACTION: "urn:schemas-upnp-org:service:ConfigurationManagement:2#GetValues"
+    POST path control URL HTTP/1.1
+    HOST: hostname:portNumber
+    CONTENT-LENGTH: bytes in body
+    CONTENT-TYPE: text/xml; charset="utf-8"
+    USER-AGENT: OS/version UPnP/2.0 product/version
+    SOAPACTION: "urn:schemas-upnp-org:service:ConfigurationManagement:2#GetValues"
 
     <?xml version="1.0"?>
     <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">

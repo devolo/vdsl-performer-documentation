@@ -118,9 +118,7 @@ The PLC device sends the following request.
     SOAPACTION: "urn:schemas-upnp-org:service:ConfigurationManagement:2#GetSupportedDataModels"
 
     <?xml version="1.0"?>
-    <s:Envelope
-    xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"
-    s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+    <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
         <s:Body>
             <cms:GetSupportedDataModels xmlns:cms="urn:schemas-upnp-org:dm:cms">
             </cms:GetSupportedDataModels>
@@ -183,19 +181,19 @@ The PLC device sends the following request to query the parameters */BBF/DSL/Lin
     <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
         <s:Body>
             <u:GetSupportedParameters xmlns:u="urn:schemas-upnp-org:service:ConfigurationManagement:2" xmlns:cms="urn:schemas-upnp-org:dm:cms">
-            <Parameters>
-                <StartingNode>
-                    <cms:StructurePathList>
-                        <StructurePath>
-                            /BBF/DSL/Line/#/
-                        </StructurePath>
-                        <StructurePath>
-                            /BBF/DSL/Channel/#/
-                        </StructurePath>
-                    </cms:StructurePathList>
-                </StartingNode>
-                <SearchDepth>0</SearchDepth>
-            </Parameters>
+                <Parameters>
+                    <StartingNode>
+                        <cms:StructurePathList>
+                            <StructurePath>
+                                /BBF/DSL/Line/#/
+                            </StructurePath>
+                            <StructurePath>
+                                /BBF/DSL/Channel/#/
+                            </StructurePath>
+                        </cms:StructurePathList>
+                    </StartingNode>
+                    <SearchDepth>0</SearchDepth>
+                </Parameters>
             </u:GetSupportedParameters>
         </s:Body>
     </s:Envelope>

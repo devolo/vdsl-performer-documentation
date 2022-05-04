@@ -48,7 +48,9 @@ The discover of the gateway device takes place in five stages:
 
 The following graph visualizes the five stages.
 
-![Discovery sequence](graphs/discovery-sequence.png "Discovery sequence")
+<p align="center">
+  <img src="graphs/discovery-sequence.png">
+</p>
 
 The first two stages are based on the discovery process defined in UDA 2.0, while the stage three and four are defined in UPnP DM CMS v2 *Discovering of the Data Model*. The fifth stage is used to make sure that the gateway's DSL link is up.
 

@@ -52,9 +52,21 @@ The discover of the gateway device takes place in five stages:
 
 The following graph visualizes the five stages.
 
-<p align="center">
-  <img src="graphs/discovery-sequence.png">
-</p>
+```mermaid
+sequenceDiagram
+    participant P as PLC Device
+    participant G as Gateway
+    P ->> G: SSDP Discover: M-SEARCH
+    G ->> P: SSDP Response
+    P ->> G: HTTP Get http://[LOCATION from SSDP]
+    G ->> P: HTTP Response with UPnP Description XML
+    P ->> G: SOAP Action: GetSupportedDataModels
+    G ->> P: SOAP Action Response
+    P ->> G: SOAP Action: GetSupportedParameters
+    G ->> P: SOAP Action Response
+    P ->> G: SOAP Action: GetValues
+    G ->> P: SOAP Action Response
+```
 
 The first two stages are based on the discovery process defined in UDA 2.0, while the stage three and four are defined in UPnP DM CMS v2 *Discovering of the Data Model*. The fifth stage is used to make sure that the gateway's DSL link is up.
 

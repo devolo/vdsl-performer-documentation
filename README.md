@@ -240,7 +240,7 @@ The response of the gateway can look like this:
         </s:Body>
     </s:Envelope>
 
-The relevant parametrs are mentioned in chapter [Relevant TR-181 data model parameters](#required-tr-181-data-model-parameters) and marked as required or optional.
+The relevant parameters are mentioned in chapter [Relevant TR-181 data model parameters](#required-tr-181-data-model-parameters) and marked as required or optional.
 
 ### Get Values
 The last stage of the discovery process is used to check if the gateway has a valid DSL link. For this, the SOAP action *GetValues* defined in UPnP DM CMS is used.

@@ -24,7 +24,7 @@ This guideline defines the communication needs between xDSL Customer Premises Eq
 - **SOAP** Simple Object Access Protocol
 - **SSDP** Simple Service Discovery Protocol
 - **ST** Search Topic used in SSDP
-- **UPnP** UPnP Device Architecture
+- **UPnP UDA** UPnP Device Architecture
 
 ## References
 - [G.997.1 (11/16)](https://www.itu.int/rec/dologin_pub.asp?lang=e&id=T-REC-G.997.1-201611-S!!PDF-E&type=items)

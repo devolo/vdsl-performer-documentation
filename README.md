@@ -18,6 +18,7 @@ This guideline defines the communication needs between xDSL Customer Premises Eq
 - **CMS:2** ConfigurationManagement service defined by UPnP Forum in UPnP DM CMS:2
 - **CPE** Customer Premises Equipment
 - **DSL** Digital Subscriber Line
+- **CM** Configuration Management
 - **DM** Device Management
 - **PLC** Powerline Communication
 - **SNR** Signal-to-noise ratio
@@ -35,23 +36,23 @@ This guideline defines the communication needs between xDSL Customer Premises Eq
 - [UPnP Device Architecture 2.0](https://openconnectivity.org/upnp-specs/UPnP-arch-DeviceArchitecture-v2.0-20200417.pdf)
 
 ## Introduction
-The VDSL performer algorithm aims to eliminate the impact of PLC on the DSL connection while keeping the best PLC performance by adjusting dynamically the PLC transmission power according to disturbances of the DSL SNR. Therefore, it requires knowledge of the DSL SNR. This is achieved by first detecting the connected gateway and then requesting the DSL SNR from this gateway.
+The VDSL performer algorithm aims to eliminate the impact of PLC on the DSL connection while keeping the best PLC performance by adjusting dynamically the PLC transmission power based on measured disturbances of the DSL SNR. Therefore, it requires knowledge of the DSL SNR. This can be acquired by finding the connected DSL gateway and then requesting the DSL SNR from this gateway.
 
-Since the device starts with a power mask which already decreases the power at certain frequencies depending on the DSL profile (e.g., 17a, 35b), it might happen that the VDSL performer algorithm also increases power where it does not interfere while it may further decrease the power mask at frequencies where the DSL signal may still be disturbed.
+Since the PLC device starts with a power mask which already decreases the power at certain frequencies depending on the DSL profile (e.g., 17a, 35b), it might happen that the VDSL performer algorithm also increases power at these frequencies where it does not interfere with DSL, while it may further decrease the power mask at frequencies where the DSL signal may still be disturbed.
 
-To find a suitable gateway device, the mechanism defined in UPnP DM CMS Discovering of the Data Model. The messages exchanged are defined in UPnP Device Architecture 2.0.
+To find the suitable gateway device, the mechanism defined in "UPnP DM CMS Discovering of the Data Model" are used. The messages exchanged are defined in "UPnP Device Architecture 2.0".
 
-The following chapters will give some hints about implementation details which are important to meet to provide a compatible gateway.
+The following chapters will provide some hints about implementation details which are important to provide a compatible gateway.
 
 ## Gateway discovery
-The discover of the gateway device takes place in five stages:
+The discovery of the gateway device takes place in five steps:
 1. SSDP discovery: Find devices supporting UPnP DM CMS service
-2. UPnP description: Extracting the control URL
-3. Data model discovery: Determining the prefix used for the TR-181 data model
-4. GetSupportedParameters: Checking if all necessary parameters are supported
-5. GetValue: Check if the DSL link is up
+2. UPnP description: Extract the control URL of the CMS service
+3. Data model discovery: Determine the prefix used for the TR-181 data model
+4. GetSupportedParameters: Check if all necessary parameters are supported
+5. GetValue: Check for an active DSL link
 
-The following graph visualizes the five stages.
+The following graph visualizes these five steps.
 
 ```mermaid
 sequenceDiagram
@@ -59,7 +60,7 @@ sequenceDiagram
     participant G as Gateway
     P ->> G: SSDP Discover: M-SEARCH
     G ->> P: SSDP Response
-    P ->> G: HTTP Get http://[LOCATION from SSDP]
+    P ->> G: HTTP GET [LOCATION from SSDP]
     G ->> P: HTTP Response with UPnP Description XML
     P ->> G: SOAP Action: GetSupportedDataModels
     G ->> P: SOAP Action Response
@@ -69,16 +70,16 @@ sequenceDiagram
     G ->> P: SOAP Action Response
 ```
 
-The first two stages are based on the discovery process defined in UDA 2.0, while the stage three and four are defined in UPnP DM CMS v2 *Discovering of the Data Model*. The fifth stage is used to make sure that the gateway's DSL link is up.
+The first two steps are based on the discovery process defined in UDA 2.0, while the steps three and four are defined in UPnP DM CMS v2 chapter *Discovering of the Data Model*. The fifth step is used to make sure that the found gateway is the one providing the DSL link.
 
-In the beginning, the SSDP discovery may return a list of multiple devices including the gateway device. The subsequent stages filter out devices that are not the gateway device or don't provide all necessary information for the VDSL performer algorithm.
+In the first step, the SSDP discovery may return a list of multiple devices including the gateway device. The subsequent steps filter out devices that are not the gateway device or don't provide all necessary information for the VDSL performer algorithm.
 
 The process is repeated if no compatible gateway could be found with an exponential backoff time between the retries.
 
-The individual stages are explained in more detail below.
+The individual steps are explained in more detail below.
 
 ### SSDP Discovery
-SSDP is used as defined in UDA 2.0 with the ST *urn:schemas-upnp-org:service:ConfigurationManagement:2* defined in UPnP DM CMS. It is used to discover devices supporting the service mentioned before and receiving required information for the next stages.
+SSDP is used as defined in UDA 2.0 with the ST `urn:schemas-upnp-org:service:ConfigurationManagement:2` defined in UPnP DM CMS. It is used to discover devices supporting the CM service mentioned above.
 
 The devolo PLC device sends the following packet to initiate the SSDP discovery:
 
@@ -87,31 +88,35 @@ The devolo PLC device sends the following packet to initiate the SSDP discovery:
     MAN: "ssdp:discover"
     MX: 5
     ST: urn:schemas-upnp-org:service:ConfigurationManagement:2
-    USER-AGENT: Spirit/<firware version> UPnP/2.0 devoloMagic/1.0
+    USER-AGENT: Spirit/<firware version> UPnP/2.0 devolo_Magic/1.0
+    
 
 The expected response has the following form:
 
     HTTP/1.1 200 OK
     CACHE-CONTROL: <max-age = seconds until advertisement expires>
-    DATE: <when response was generated>
+    DATE: <datetime when response was generated>
     EXT:
     LOCATION: <URL for UPnP description for root device>
-    SERVER: <OS/version> UPnP/2.0 <product/version>
+    SERVER: <OS>/<version> UPnP/2.0 <product>/<version>
     ST: urn:schemas-upnp-org:service:ConfigurationManagement:2
     USN: <composite identifier for the advertisement>
+    
 
-The devolo PLC device evaluates only the ST and LOCATION header field. The LOCATION field must contain the location where to fetch the UPnP description XML file, which is necessary for the next stage.
+The devolo PLC device evaluates only the ST and LOCATION header field. The LOCATION field must contain the URL from where to fetch the UPnP description XML file, which is necessary for the next step.
 
 ### UPnP description
-This stage is used to determine the URL where the service can be reached. It's defined in UDA 2.0 *Device description*.
+This step is used to determine the URL where the CM service can be reached. It is defined in UDA 2.0 *Device description*.
 
-The UPnP description must be valid XML and defines a root device and optionally logical devices embedded in this root device. The root device lists its services in the *serviceList* as well as the optional logical devices can list their services in their own *serviceList*. The devolo PLC device will search for services with the *serviceType* *urn:schemas-upnp-org:service:ConfigurationManagement:2* in the *serviceList* of the root device and in all logical devices. For services matching this *serviceType*, it will extract the *controlURL* to use for subsequent SOAP calls. The controlURL specifies the host, port, and path where this service can be reached. The *controlURL* may be a path relative to the address and port or an absolute URL including address and port. This enables the gateway to provide the service on another port than the UPnP description.
+The UPnP description must be a valid XML document and defines a root device and optionally logical devices embedded in this root device. The root device lists its services in the *serviceList*. Any embedded logical devices can list their services in their own *serviceList*.
+
+The devolo PLC device will search for services with the *serviceType* `urn:schemas-upnp-org:service:ConfigurationManagement:2` in the *serviceList* of the root device and in all logical devices. For services matching this *serviceType*, it will extract the *controlURL* to use for subsequent SOAP calls. The *controlURL* specifies the path where this service can be reached for control actions. The *controlURL* is usually relative to the URL at which the device description is located. It may be an absolute URL including address and port, which enables the gateway to provide the service on another port than the UPnP description.
 
 The devolo PLC device evaluates only *serviceType* and the *controlURL* from the XML *service* fragment.
 
     <service>
         <serviceType>urn:schemas-upnp-org:service:ConfigurationManagement:2</serviceType>
-        <serviceId> <!-- not considered --> </serviceId>
+        <serviceId><!-- The urn:upnp-org:serviceId serviceId --> </serviceId>
         <SCPDURL> <!-- not considered --> </SCPDURL>
         <controlURL>URL for control</controlURL>
         <eventSubURL> <!-- not considered --> </eventSubURL>
@@ -119,15 +124,15 @@ The devolo PLC device evaluates only *serviceType* and the *controlURL* from the
 
 
 ### Data model discovery
-This stage is used to determine the prefix of the TR-181 parameters to UPnP DM names (*Data Model Location*). It defaults to */BBF/* as defined in UPnP DM CMS Appendix C *BBF (TR-069) Mapping Rules*. The SOAP action *GetSupportedDataModels* is used to determine the prefix.
+This step is used to determine the prefix of the mapping of the TR-181 parameters to UPnP DM names (*Data Model Location*). It defaults to `/BBF/` as defined in UPnP DM CMS Appendix C *BBF (TR-069) Mapping Rules*. The SOAP action *GetSupportedDataModels* is used to determine the prefix.
 
 The PLC device sends the following request.
 
-    POST path control URL HTTP/1.1
+    POST path of control URL HTTP/1.1
     HOST: hostname:portNumber
     CONTENT-LENGTH: bytes in body
     CONTENT-TYPE: text/xml; charset="utf-8"
-    USER-AGENT: Spirit/<firware version> UPnP/2.0 devoloMagic/1.0
+    USER-AGENT: Spirit/<firware version> UPnP/2.0 devolo_Magic/1.0
     SOAPACTION: "urn:schemas-upnp-org:service:ConfigurationManagement:2#GetSupportedDataModels"
 
     <?xml version="1.0"?>
@@ -172,18 +177,18 @@ A valid response could look like this:
         </s:Body>
     </s:Envelope>
 
-The name of the XML namespaces can vary and be defined at different levels.
+The names of the XML namespaces can vary and be defined at different levels.
 
 The rules mentioned in UPnP DM CMS Appendix C *BBF (TR-069) Mapping Rules* must be followed, like replacing dots by slashes, removing *Device*, and starting indexing at 0 instead of 1, e.g.:
 
 - Device.DSL.Line.1.TestParams.SNRpsds &#8594; /BBF/DSL/Line/0/TestParams/SNRpsds
 
 ### Supported Parameters
-This stage is used to figure out if the devices found before support all required parameters. For this, the SOAP action *GetSupportedParameters* is used.
+This step is used to figure out if the devices found support all required parameters. For this, the SOAP action *GetSupportedParameters* is used.
 
-The PLC device sends the following request to query the parameters */BBF/DSL/Line/#/* and */BBF/DSL/Channel/#/*
+The PLC device sends the following request to query the parameters `/BBF/DSL/Line/#/` and `/BBF/DSL/Channel/#/`
 
-    POST controlURL HTTP/1.1
+    POST path of controlURL HTTP/1.1
     HOST: hostname:portNumber
     CONTENT-LENGTH: bytes in body
     CONTENT-TYPE: text/xml; charset="utf-8"
@@ -243,11 +248,11 @@ The response of the gateway can look like this:
 The relevant parameters are mentioned in chapter [Relevant TR-181 data model parameters](#required-tr-181-data-model-parameters) and marked as required or optional.
 
 ### Get Values
-The last stage of the discovery process is used to check if the gateway has a valid DSL link. For this, the SOAP action *GetValues* defined in UPnP DM CMS is used.
+The last step of the process is to check if the found gateway has a valid DSL link. For this, the SOAP action *GetValues* defined in UPnP DM CMS is used.
 
 The PLC device will request the values using the following request.
 
-    POST path control URL HTTP/1.1
+    POST path of control URL HTTP/1.1
     HOST: hostname:portNumber
     CONTENT-LENGTH: bytes in body
     CONTENT-TYPE: text/xml; charset="utf-8"
@@ -260,12 +265,12 @@ The PLC device will request the values using the following request.
             <cms:GetValues xmlns:cms="urn:schemas-upnp-org:service:ConfigurationManagement:2">
                 <Parameters>
                     <cms:ContentPathList>
-                    <ContentPath>
-                        /BBF/DSL/Line/#/
-                    </ContentPath>
-                    <ContentPath>
-                        /BBF/DSL/Channel/#/
-                    </ContentPath>
+                        <ContentPath>
+                            /BBF/DSL/Line/#/
+                        </ContentPath>
+                        <ContentPath>
+                            /BBF/DSL/Channel/#/
+                        </ContentPath>
                     </cms:ContentPathList>
                 </Parameters>
             </cms:GetValues>

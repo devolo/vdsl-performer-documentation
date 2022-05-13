@@ -1,5 +1,5 @@
 # VDSL Performer - Guideline for the implementation on Gateways
-This guideline defines the communication needs between xDSL Customer Premises Equipment (CPE) and Powerline Communication (PLC) devices to implement an automatic mitigation of interference of PLC on DSL.
+This guideline defines the communication needs between xDSL Customer Premises Equipment (CPE) and Powerline Communication (PLC) devices to implement an automatic mitigation of interference of PLC on DSL. The mitigation algorithm is also known as Dynamic Interference Mitigation (DIM).
 
   - [Abbreviations](#abbreviations)
   - [References](#references)

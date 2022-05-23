@@ -1,5 +1,9 @@
 # VDSL Performer - Guideline for the implementation on Gateways
-This guideline defines the communication needs between xDSL Customer Premises Equipment (CPE) and Powerline Communication (PLC) devices to implement an automatic mitigation of interference of PLC on DSL. The mitigation algorithm is also known as Dynamic Interference Mitigation (DIM). The original implementation was released with the Magic LAN firmware 7.10.0 and Magic WiFi firmware 5.7.0. The generalized approach, that is described in this document, was introduced with the Magic LAN firmware 7.12.4 and the Magic WiFi firmware 5.10.1.
+This guideline defines the communication needs between xDSL Customer Premises Equipment (CPE) and Powerline Communication (PLC) devices to implement an automatic mitigation of interference of PLC on DSL. The mitigation algorithm is also known as Dynamic Interference Mitigation (DIM).
+
+The original implementation was released with the Magic LAN firmware 7.10.0 and Magic WiFi firmware 5.7.0. The generalized approach, that is described in this document, was introduced with the Magic LAN firmware 7.12.4 and the Magic WiFi firmware 5.10.1.
+
+As of Magic LAN Firmware 7.12.4 and Magic WiFi Firmware 5.10.1, the VDSL performer supports the DSL profiles 17a, 30a, 35b, and 106a.
 
   - [Abbreviations](#abbreviations)
   - [References](#references)

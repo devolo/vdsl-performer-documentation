@@ -64,3 +64,7 @@ The SNR values adhere to the format specified in [TR-181 Issue 2](https://cwmp-d
 The spectrum analyzer image below illustrates the received SNR of a Power Line Communication (PLC) device. The black line represents the SNR without interference mitigation, while the green line shows a reduced SNR to mitigate interference with DSL signals.
 
 ![Spectrum Analyzer Example](./images/gwsim-example1.png)
+
+The image below shows the SNR of a DSL connection using profile 17a in various states: undisturbed DSL upstream and downstream SNR, as well as the SNR during interference measurement for both upstream and downstream. It also highlights the power reductions applied to the transmitted signals of the PLC device, separately for the LN and LN-PE paths.
+
+![DSL SNR example](./images/DSL-snr.png)
